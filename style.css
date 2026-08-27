@@ -1,0 +1,713 @@
+/* ==========================================================
+   SURANA JEWELLERS — Gold Valuation Report
+   Design: warm brass/ivory palette befitting a jewellery
+   business; utility grid for the input screen; a formal,
+   traditional bank-document look for the printed report.
+   ========================================================== */
+
+:root {
+  --ink: #241c14;
+  --ink-soft: #5b4f40;
+  --paper: #fbf8f2;
+  --paper-panel: #ffffff;
+  --line: #e4dbc9;
+  --line-strong: #cbb98f;
+  --brass: #9c6b2c;
+  --brass-deep: #7a4f1c;
+  --brass-pale: #f3e6cc;
+  --accent: #7c2d2d;
+  --danger: #9c3b3b;
+  --radius: 10px;
+  --shadow: 0 1px 2px rgba(36, 28, 20, 0.06), 0 8px 24px rgba(36, 28, 20, 0.06);
+  font-size: 16px;
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  padding: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: "Segoe UI", "Noto Sans", "Noto Sans Devanagari", system-ui, -apple-system, sans-serif;
+}
+
+h1, h2, h3 { margin: 0; }
+
+button {
+  font-family: inherit;
+}
+
+/* ---------------- App shell ---------------- */
+
+.app-screen {
+  min-height: 100vh;
+}
+
+.app-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 20px 32px;
+  background: var(--paper-panel);
+  border-bottom: 1px solid var(--line);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.app-header-brand {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.app-header-mark {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--brass), var(--brass-deep));
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  font-size: 0.95rem;
+  flex-shrink: 0;
+}
+
+.app-header-brand h1 {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--ink);
+}
+
+.app-header-brand p {
+  margin: 2px 0 0;
+  font-size: 0.82rem;
+  color: var(--ink-soft);
+}
+
+.app-header-actions {
+  display: flex;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+.app-main {
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: 28px 32px 80px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* ---------------- Cards ---------------- */
+
+.card {
+  background: var(--paper-panel);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 22px 24px;
+  box-shadow: var(--shadow);
+}
+
+.card-title {
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--brass-deep);
+  margin-bottom: 16px;
+}
+
+.card-title-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+
+.card-hint {
+  margin: -8px 0 16px;
+  font-size: 0.8rem;
+  color: var(--ink-soft);
+}
+
+.card-title-row .card-title {
+  margin-bottom: 0;
+}
+
+/* ---------------- Form grid ---------------- */
+
+.grid {
+  display: grid;
+  gap: 16px;
+}
+
+.grid-2 { grid-template-columns: repeat(2, 1fr); }
+.grid-3 { grid-template-columns: repeat(3, 1fr); }
+.grid-4 { grid-template-columns: repeat(4, 1fr); }
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+
+.field-wide {
+  grid-column: span 2;
+}
+
+.field span {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--ink-soft);
+}
+
+.field input,
+.field select {
+  padding: 10px 12px;
+  border: 1px solid var(--line-strong);
+  border-radius: 8px;
+  font-size: 0.95rem;
+  background: #fff;
+  color: var(--ink);
+  font-family: inherit;
+}
+
+.field input:focus,
+.field select:focus {
+  outline: 2px solid var(--brass);
+  outline-offset: 1px;
+  border-color: var(--brass);
+}
+
+.readonly-input {
+  background: var(--brass-pale) !important;
+  color: var(--ink-soft);
+}
+
+.field-readout {
+  justify-content: flex-end;
+}
+
+.readout {
+  padding: 10px 12px;
+  background: var(--brass-pale);
+  border: 1px solid var(--line-strong);
+  border-radius: 8px;
+  font-weight: 700;
+  color: var(--brass-deep);
+  font-size: 0.95rem;
+}
+
+.field-checkbox {
+  justify-content: flex-end;
+}
+
+.checkbox-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 0;
+}
+
+.checkbox-row input {
+  width: 16px;
+  height: 16px;
+}
+
+.checkbox-row label {
+  font-size: 0.85rem;
+  color: var(--ink-soft);
+  font-weight: 500;
+}
+
+/* ---------------- Buttons ---------------- */
+
+.btn {
+  border: 1px solid transparent;
+  border-radius: 8px;
+  padding: 10px 18px;
+  font-size: 0.88rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: filter 0.12s ease, transform 0.05s ease;
+}
+
+.btn:active {
+  transform: translateY(1px);
+}
+
+.btn-primary {
+  background: var(--brass-deep);
+  color: #fff;
+}
+
+.btn-primary:hover { filter: brightness(1.08); }
+
+.btn-secondary {
+  background: var(--ink);
+  color: #fff;
+}
+
+.btn-secondary:hover { filter: brightness(1.15); }
+
+.btn-ghost {
+  background: transparent;
+  border-color: var(--line-strong);
+  color: var(--ink-soft);
+}
+
+.btn-ghost:hover {
+  background: var(--brass-pale);
+  color: var(--ink);
+}
+
+.btn-danger {
+  background: var(--danger);
+  color: #fff;
+}
+
+.btn-danger:hover { filter: brightness(1.1); }
+
+.btn-small {
+  padding: 6px 14px;
+  font-size: 0.8rem;
+}
+
+.btn-large {
+  padding: 14px 28px;
+  font-size: 1rem;
+}
+
+.action-bar {
+  display: flex;
+  justify-content: center;
+  gap: 14px;
+  padding: 12px 0 8px;
+}
+
+/* ---------------- Item table (input screen) ---------------- */
+
+.table-scroll {
+  overflow-x: auto;
+}
+
+.item-table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 720px;
+}
+
+.item-table th {
+  text-align: left;
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--ink-soft);
+  padding: 8px 8px;
+  border-bottom: 2px solid var(--line-strong);
+}
+
+.item-table td {
+  padding: 6px 8px;
+  border-bottom: 1px solid var(--line);
+  vertical-align: middle;
+}
+
+.col-sn { width: 46px; text-align: center; }
+.col-pcs { width: 64px; }
+.col-wt { width: 110px; }
+.col-kt { width: 130px; }
+.col-value { width: 120px; text-align: right; }
+.col-del { width: 36px; }
+
+.sn-cell {
+  text-align: center;
+  font-weight: 600;
+  color: var(--ink-soft);
+}
+
+.cell-input {
+  width: 100%;
+  padding: 7px 8px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  font-size: 0.9rem;
+  font-family: inherit;
+  background: #fff;
+  color: var(--ink);
+}
+
+.cell-input:focus {
+  outline: 2px solid var(--brass);
+  outline-offset: 1px;
+  border-color: var(--brass);
+}
+
+.item-karat-custom {
+  margin-top: 4px;
+}
+
+.value-cell {
+  text-align: right;
+  font-weight: 700;
+  color: var(--brass-deep);
+  white-space: nowrap;
+}
+
+.row-del-btn {
+  border: none;
+  background: transparent;
+  color: var(--danger);
+  font-size: 1rem;
+  cursor: pointer;
+  padding: 4px 6px;
+  border-radius: 6px;
+  line-height: 1;
+}
+
+.row-del-btn:hover {
+  background: #f4e2e2;
+}
+
+.totals-row td {
+  font-weight: 700;
+  border-top: 2px solid var(--line-strong);
+  border-bottom: none;
+  padding-top: 12px;
+  color: var(--ink);
+}
+
+.totals-row td:last-child,
+.totals-row td:nth-last-child(2) {
+  color: var(--brass-deep);
+}
+
+/* ---------------- Modals ---------------- */
+
+.modal-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(36, 28, 20, 0.45);
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+  padding: 20px;
+}
+
+.modal-overlay.open {
+  display: flex;
+}
+
+.modal {
+  background: var(--paper-panel);
+  border-radius: 12px;
+  padding: 28px 30px;
+  max-width: 640px;
+  width: 100%;
+  max-height: 88vh;
+  overflow-y: auto;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.25);
+}
+
+.modal-small {
+  max-width: 420px;
+}
+
+.modal h2 {
+  font-size: 1.1rem;
+  margin-bottom: 6px;
+}
+
+.modal-sub {
+  font-size: 0.85rem;
+  color: var(--ink-soft);
+  margin: 0 0 18px;
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+/* ==========================================================
+   PRINTABLE REPORT
+   ========================================================== */
+
+.report-toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 20px 20px 0;
+}
+
+.report-page {
+  width: 210mm;
+  min-height: 297mm;
+  margin: 24px auto 60px;
+  background: #fff;
+  padding: 14mm 16mm;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.12);
+  color: #111;
+  font-family: "Segoe UI", "Noto Sans", "Noto Sans Devanagari", Arial, sans-serif;
+}
+
+.report-header-top {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: start;
+  gap: 8px;
+}
+
+.report-header-spacer {}
+
+.report-header-center {
+  text-align: center;
+}
+
+.report-shop-name {
+  font-size: 1.9rem;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  color: #1a1208;
+}
+
+.report-tagline {
+  margin: 4px 0 0;
+  font-size: 1rem;
+  color: #333;
+}
+
+.report-proprietor {
+  margin: 4px 0 0;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #222;
+}
+
+.report-gstin {
+  text-align: right;
+  font-size: 0.82rem;
+  font-weight: 700;
+  white-space: nowrap;
+  padding-top: 4px;
+}
+
+.report-header-rule {
+  border-top: 2.5px solid #1a1208;
+  margin-top: 10px;
+}
+
+.report-header-address {
+  text-align: center;
+  margin-top: 6px;
+}
+
+.report-header-address p {
+  margin: 1px 0;
+  font-size: 0.8rem;
+  color: #333;
+}
+
+.report-meta-row {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 16px;
+  font-size: 0.92rem;
+}
+
+.meta-label {
+  font-weight: 700;
+}
+
+.report-title {
+  text-align: center;
+  font-size: 1.15rem;
+  font-weight: 800;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+  margin-top: 14px;
+  letter-spacing: 0.01em;
+}
+
+.report-bank-line {
+  text-align: center;
+  font-weight: 700;
+  margin: 10px 0 0;
+  font-size: 0.95rem;
+}
+
+.report-customer {
+  margin-top: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 0.92rem;
+}
+
+.report-customer-row .meta-label {
+  display: inline-block;
+  min-width: 70px;
+}
+
+.report-rate-line {
+  margin-top: 12px;
+  font-weight: 700;
+  font-size: 0.95rem;
+}
+
+.report-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 10px;
+  font-size: 0.88rem;
+}
+
+.report-table th,
+.report-table td {
+  border: 1px solid #1a1208;
+  padding: 6px 8px;
+}
+
+.report-table th {
+  background: #f2ead6;
+  font-weight: 700;
+  text-align: center;
+}
+
+.report-table td.col-item { text-align: left; }
+.report-table td.col-pcs,
+.report-table td.col-sn { text-align: center; }
+.report-table td.col-wt,
+.report-table td.col-value { text-align: right; }
+.report-table td.col-kt { text-align: center; }
+
+.report-totals-row td {
+  font-weight: 800;
+  background: #f7f1e0;
+}
+
+.report-footer-block {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  margin-top: 34px;
+  gap: 30px;
+}
+
+.report-signature {
+  flex: 1;
+}
+
+.signature-space {
+  height: 60px;
+  border-bottom: 1px solid #1a1208;
+  width: 220px;
+}
+
+.signature-label {
+  margin: 6px 0 0;
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+
+.report-bank-details {
+  text-align: right;
+  font-size: 0.9rem;
+}
+
+.report-bank-details p {
+  margin: 3px 0;
+  font-weight: 600;
+}
+
+.report-footer {
+  margin-top: 26px;
+  border-top: 1px solid #1a1208;
+  padding-top: 8px;
+  text-align: center;
+}
+
+.report-footer p {
+  margin: 1px 0;
+  font-size: 0.78rem;
+  color: #333;
+}
+
+.footer-shop-name {
+  font-weight: 800 !important;
+  font-size: 0.85rem !important;
+  color: #1a1208 !important;
+}
+
+/* ==========================================================
+   PRINT MEDIA
+   ========================================================== */
+
+@media print {
+  @page {
+    size: A4 portrait;
+    margin: 0;
+  }
+
+  html, body {
+    background: #fff;
+  }
+
+  .no-print,
+  .app-header,
+  #inputScreen,
+  .report-toolbar {
+    display: none !important;
+  }
+
+  #reportScreen {
+    display: block !important;
+  }
+
+  .report-page {
+    box-shadow: none;
+    margin: 0;
+    width: 210mm;
+    min-height: 297mm;
+    padding: 14mm 16mm;
+  }
+
+  .report-table {
+    page-break-inside: avoid;
+  }
+
+  .report-footer-block {
+    page-break-inside: avoid;
+  }
+}
+
+/* ---------------- Responsive ---------------- */
+
+@media (max-width: 900px) {
+  .grid-4 { grid-template-columns: repeat(2, 1fr); }
+  .grid-3 { grid-template-columns: repeat(2, 1fr); }
+  .grid-2 { grid-template-columns: 1fr; }
+  .field-wide { grid-column: span 2; }
+  .app-main { padding: 20px 16px 80px; }
+  .app-header { padding: 16px; }
+}
+
+@media (max-width: 600px) {
+  .grid-4, .grid-3, .grid-2 { grid-template-columns: 1fr; }
+  .field-wide { grid-column: span 1; }
+  .app-header-brand p { display: none; }
+  .report-page { width: 100%; padding: 8mm; }
+}

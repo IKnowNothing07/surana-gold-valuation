@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Surana Jewellers — Gold Valuation Report</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- ============================================================
+     SCREEN 1: INPUT / CALCULATOR
+     ============================================================ -->
+<div class="app-screen" id="inputScreen">
+
+  <header class="app-header">
+    <div class="app-header-brand">
+      <div class="app-header-mark">SJ</div>
+      <div>
+        <h1>Gold Valuation Report</h1>
+        <p>Surana Jewellers — report builder for SBI bank valuations</p>
+      </div>
+    </div>
+    <div class="app-header-actions">
+      <button type="button" class="btn btn-ghost" id="settingsBtn">Shop settings</button>
+      <button type="button" class="btn btn-ghost" id="clearBtn">New report</button>
+    </div>
+  </header>
+
+  <main class="app-main">
+
+    <!-- Report details -->
+    <section class="card">
+      <h2 class="card-title">Report details</h2>
+      <div class="grid grid-4">
+        <label class="field">
+          <span>क्रमांक / Ref No.</span>
+          <input type="text" id="refNo" placeholder="e.g. 214">
+        </label>
+        <label class="field">
+          <span>दिनांक / Date</span>
+          <input type="date" id="reportDate">
+        </label>
+        <label class="field">
+          <span>Bank</span>
+          <input type="text" id="bankName" value="SBI" readonly class="readonly-input">
+        </label>
+        <label class="field">
+          <span>Branch</span>
+          <select id="branchSelect">
+            <option value="waraseoni">Waraseoni</option>
+            <option value="mahendiwada">Waraseoni (Mahendiwada)</option>
+          </select>
+        </label>
+      </div>
+    </section>
+
+    <!-- Customer details -->
+    <section class="card">
+      <h2 class="card-title">Customer details</h2>
+      <div class="grid grid-2">
+        <label class="field">
+          <span>Name</span>
+          <input type="text" id="custName" placeholder="Customer's full name">
+        </label>
+        <label class="field">
+          <span>S/o (Father's / Husband's name)</span>
+          <input type="text" id="custSo" placeholder="e.g. S/o Ramesh Sharma">
+        </label>
+        <label class="field field-wide">
+          <span>Address</span>
+          <input type="text" id="custAddress" placeholder="Customer's address">
+        </label>
+        <label class="field">
+          <span>Aadhaar No.</span>
+          <input type="text" id="custAadhaar" placeholder="XXXX XXXX XXXX" maxlength="14" inputmode="numeric">
+        </label>
+        <label class="field field-checkbox">
+          <span>&nbsp;</span>
+          <span class="checkbox-row">
+            <input type="checkbox" id="maskAadhaar">
+            <label for="maskAadhaar">Mask Aadhaar on printed report (show only last 4 digits)</label>
+          </span>
+        </label>
+      </div>
+    </section>
+
+    <!-- Gold rate -->
+    <section class="card">
+      <h2 class="card-title">Gold rate</h2>
+      <p class="card-hint">Used only to calculate item values. This rate is not printed on the report.</p>
+      <div class="grid grid-3">
+        <label class="field">
+          <span>24K Gold Rate (₹ per 10 gm)</span>
+          <input type="number" id="rate24k" placeholder="e.g. 145000" min="0" step="1">
+        </label>
+        <div class="field field-readout">
+          <span>Rate per gram (24K)</span>
+          <div class="readout" id="ratePerGramReadout">₹0</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Jewellery table -->
+    <section class="card">
+      <div class="card-title-row">
+        <h2 class="card-title">Jewellery items</h2>
+        <button type="button" class="btn btn-primary btn-small" id="addRowBtn">+ Add item</button>
+      </div>
+
+      <div class="table-scroll">
+        <table class="item-table" id="itemTable">
+          <thead>
+            <tr>
+              <th class="col-sn">S.N.</th>
+              <th class="col-item">Item</th>
+              <th class="col-pcs">Pcs</th>
+              <th class="col-wt">Gross Wt (g)</th>
+              <th class="col-wt">Net Wt (g)</th>
+              <th class="col-kt">Karat</th>
+              <th class="col-value">Value (₹)</th>
+              <th class="col-del"></th>
+            </tr>
+          </thead>
+          <tbody id="itemTableBody">
+            <!-- rows injected by script.js -->
+          </tbody>
+          <tfoot>
+            <tr class="totals-row">
+              <td colspan="2">Total</td>
+              <td id="totalPcs">0</td>
+              <td id="totalGross">0.000</td>
+              <td id="totalNet">0.000</td>
+              <td></td>
+              <td id="totalValue">₹0</td>
+              <td></td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+    </section>
+
+    <!-- Fees & bank details -->
+    <section class="card">
+      <h2 class="card-title">Fees &amp; bank details</h2>
+      <div class="grid grid-3">
+        <label class="field">
+          <span>Fees (₹)</span>
+          <input type="number" id="feesInput" placeholder="e.g. 2000" min="0" step="1">
+        </label>
+        <label class="field">
+          <span>SBI A/C No.</span>
+          <input type="text" id="acctInput">
+        </label>
+        <label class="field">
+          <span>IFSC Code</span>
+          <input type="text" id="ifscInput">
+        </label>
+      </div>
+    </section>
+
+    <div class="action-bar">
+      <button type="button" class="btn btn-primary btn-large" id="generateBtn">Generate report</button>
+      <button type="button" class="btn btn-secondary btn-large" id="printBtn">Print report</button>
+    </div>
+
+  </main>
+</div>
+
+<!-- ============================================================
+     SETTINGS MODAL — shop configuration
+     ============================================================ -->
+<div class="modal-overlay" id="settingsModal">
+  <div class="modal">
+    <h2>Shop settings</h2>
+    <p class="modal-sub">These defaults appear on every report. Changes are saved in this browser.</p>
+
+    <div class="grid grid-2">
+      <label class="field">
+        <span>Shop name</span>
+        <input type="text" id="cfgShopName">
+      </label>
+      <label class="field">
+        <span>Proprietor</span>
+        <input type="text" id="cfgProprietor">
+      </label>
+      <label class="field field-wide">
+        <span>Hindi tagline</span>
+        <input type="text" id="cfgTagline">
+      </label>
+      <label class="field field-wide">
+        <span>Address (Hindi)</span>
+        <input type="text" id="cfgAddressHi">
+      </label>
+      <label class="field field-wide">
+        <span>Address (English)</span>
+        <input type="text" id="cfgAddressEn">
+      </label>
+      <label class="field">
+        <span>GSTIN</span>
+        <input type="text" id="cfgGstin">
+      </label>
+      <label class="field">
+        <span>Default bank</span>
+        <input type="text" id="cfgBank">
+      </label>
+      <label class="field">
+        <span>Default A/C No.</span>
+        <input type="text" id="cfgAcct">
+      </label>
+      <label class="field">
+        <span>Default IFSC</span>
+        <input type="text" id="cfgIfsc">
+      </label>
+    </div>
+
+    <div class="modal-actions">
+      <button type="button" class="btn btn-ghost" id="settingsCancelBtn">Cancel</button>
+      <button type="button" class="btn btn-primary" id="settingsSaveBtn">Save settings</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================
+     CONFIRM CLEAR MODAL
+     ============================================================ -->
+<div class="modal-overlay" id="confirmModal">
+  <div class="modal modal-small">
+    <h2>Start a new report?</h2>
+    <p class="modal-sub">This clears all entered details and jewellery items. This can't be undone.</p>
+    <div class="modal-actions">
+      <button type="button" class="btn btn-ghost" id="confirmCancelBtn">Cancel</button>
+      <button type="button" class="btn btn-danger" id="confirmClearBtn">Clear form</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================
+     SCREEN 2: PRINTABLE REPORT
+     ============================================================ -->
+<div class="app-screen" id="reportScreen" style="display:none;">
+
+  <div class="report-toolbar no-print">
+    <button type="button" class="btn btn-ghost" id="backToFormBtn">&larr; Back to form</button>
+    <button type="button" class="btn btn-primary" id="printFromReportBtn">Print report</button>
+  </div>
+
+  <div class="report-page" id="reportPage">
+
+    <div class="report-header">
+      <div class="report-header-top">
+        <div class="report-header-spacer"></div>
+        <div class="report-header-center">
+          <h1 class="report-shop-name" id="rShopName">SURANA JEWELLERS</h1>
+          <p class="report-tagline" id="rTagline">सोना, चांदी एवं कीमती रत्नों के विक्रेता</p>
+          <p class="report-proprietor" id="rProprietor">प्रो. नवीन सुराना (Naveen Surana)</p>
+        </div>
+        <div class="report-gstin">
+          <span id="rGstin">GSTIN: 23AYAPS910QIZZ</span>
+        </div>
+      </div>
+      <div class="report-header-rule"></div>
+      <div class="report-header-address">
+        <p id="rAddressHi">नेहरू चौक, मुख्य मार्ग, वारासिवनी, जिला - बालाघाट (म.प्र.) - 481331</p>
+        <p id="rAddressEn">Nehru Chowk, Main Road, Waraseoni, Dist. Balaghat, Madhya Pradesh - 481331</p>
+      </div>
+    </div>
+
+    <div class="report-meta-row">
+      <div class="report-meta-item"><span class="meta-label">क्रमांक / Ref No.:</span> <span id="rRefNo">—</span></div>
+      <div class="report-meta-item"><span class="meta-label">दिनांक / Date:</span> <span id="rDate">—</span></div>
+    </div>
+
+    <h2 class="report-title">Gold Ornaments Valuation Report</h2>
+
+    <p class="report-bank-line" id="rBankLine">For Bank: SBI / Branch - Waraseoni</p>
+
+    <div class="report-customer">
+      <div class="report-customer-row"><span class="meta-label">Name:</span> <span id="rCustName">—</span></div>
+      <div class="report-customer-row"><span class="meta-label">Address:</span> <span id="rCustAddress">—</span></div>
+      <div class="report-customer-row"><span class="meta-label">S/o:</span> <span id="rCustSo">—</span></div>
+      <div class="report-customer-row"><span class="meta-label">Aadhaar No.:</span> <span id="rCustAadhaar">—</span></div>
+    </div>
+
+    <table class="report-table">
+      <thead>
+        <tr>
+          <th class="col-sn">S.N.</th>
+          <th class="col-item">Item</th>
+          <th class="col-pcs">Pcs</th>
+          <th class="col-wt">Gross Wt<br>(gm)</th>
+          <th class="col-wt">Net Wt<br>(gm)</th>
+          <th class="col-kt">KT (%)</th>
+          <th class="col-value">Value (₹)</th>
+        </tr>
+      </thead>
+      <tbody id="rItemBody">
+        <!-- injected -->
+      </tbody>
+      <tfoot>
+        <tr class="report-totals-row">
+          <td colspan="2">Total</td>
+          <td id="rTotalPcs">0</td>
+          <td id="rTotalGross">0.000</td>
+          <td id="rTotalNet">0.000</td>
+          <td></td>
+          <td id="rTotalValue">₹0</td>
+        </tr>
+      </tfoot>
+    </table>
+
+    <div class="report-footer-block">
+      <div class="report-signature">
+        <div class="signature-space"></div>
+        <p class="signature-label">Authorized Signature</p>
+      </div>
+      <div class="report-bank-details">
+        <p><span class="meta-label">Fees</span> - <span id="rFees">₹0/-</span></p>
+        <p><span id="rAcct">SBI A/C - 11226812494</span></p>
+        <p><span id="rIfsc">IFSC Code: SBIN0000499</span></p>
+      </div>
+    </div>
+
+    <div class="report-footer">
+      <p class="footer-shop-name" id="fShopName">SURANA JEWELLERS</p>
+      <p id="fAddress">Nehru Chowk, Main Road, Waraseoni, Dist. Balaghat, Madhya Pradesh - 481331</p>
+      <p id="fPhone">Phone: 9425403001</p>
+    </div>
+
+  </div>
+</div>
+
+<!-- Row template used by JS -->
+<template id="rowTemplate">
+  <tr class="item-row">
+    <td class="col-sn sn-cell">1</td>
+    <td class="col-item"><input type="text" class="cell-input item-name" placeholder="e.g. Necklace"></td>
+    <td class="col-pcs"><input type="number" class="cell-input item-pcs" min="0" step="1" value="1"></td>
+    <td class="col-wt"><input type="number" class="cell-input item-gross" min="0" step="0.001" placeholder="0.000"></td>
+    <td class="col-wt"><input type="number" class="cell-input item-net" min="0" step="0.001" placeholder="0.000"></td>
+    <td class="col-kt">
+      <select class="cell-input item-karat">
+        <option value="24">24K</option>
+        <option value="22" selected>22K</option>
+        <option value="20">20K</option>
+        <option value="18">18K</option>
+        <option value="16">16K</option>
+        <option value="14">14K</option>
+        <option value="12">12K</option>
+        <option value="custom">Custom</option>
+      </select>
+      <input type="number" class="cell-input item-karat-custom" placeholder="Karat" min="0" max="24" step="0.01" style="display:none;">
+    </td>
+    <td class="col-value value-cell">₹0</td>
+    <td class="col-del"><button type="button" class="row-del-btn" title="Delete row">✕</button></td>
+  </tr>
+</template>
+
+<script src="script.js"></script>
+</body>
+</html>
