@@ -85,7 +85,8 @@ function formatWeight(w) {
 
 function formatKtPercent(karat) {
   const purity = purityForKarat(karat) * 100;
-  return `${purity.toFixed(1)}% = ${Number(karat)}Kt`;
+  const truncated = Math.floor(purity * 10) / 10;
+  return `${truncated.toFixed(1)}% = ${Number(karat)}Kt`;
 }
 
 function todayISO() {
@@ -268,12 +269,9 @@ function renderShopChrome() {
   el("rShopName").textContent = CONFIG.shopName;
   el("rTagline").textContent = CONFIG.tagline;
   el("rProprietor").textContent = CONFIG.proprietor;
-  el("rGstin").textContent = `GSTIN: ${CONFIG.gstin}`;
-  el("rAddressHi").textContent = CONFIG.addressHi;
+  el("rGstin").textContent = CONFIG.gstin;
   el("rAddressEn").textContent = CONFIG.addressEn;
-  el("fShopName").textContent = CONFIG.shopName;
-  el("fAddress").textContent = CONFIG.addressEn;
-  el("fPhone").textContent = `Phone: ${CONFIG.phone}`;
+  el("rPhone").textContent = CONFIG.phone;
 }
 
 function renderReport() {
@@ -281,39 +279,42 @@ function renderReport() {
 
   renderShopChrome();
 
-  el("rRefNo").textContent = data.refNo;
-  el("rDate").textContent = formatDateDisplay(data.date);
-
   const branchLabel = data.branch === "mahendiwada" ? "Waraseoni (Mahendiwada)" : "Waraseoni";
-  el("rBankLine").textContent = `For Bank: ${CONFIG.defaultBank} / Branch - ${branchLabel}`;
+  el("rBranchLine").textContent = `${branchLabel} Branch`;
+  el("rAcct").textContent = data.acct;
 
   el("rCustName").textContent = data.custName;
-  el("rCustAddress").textContent = data.custAddress;
   el("rCustSo").textContent = data.custSo;
-  el("rCustAadhaar").textContent = data.maskAadhaar
-    ? maskAadhaarValue(data.custAadhaar)
-    : (data.custAadhaar || "—");
+  el("rCustAddress").textContent = data.custAddress;
+  el("rDate").textContent = formatDateDisplay(data.date);
+  el("rPlace").textContent = branchLabel;
+  el("rSignDate").textContent = formatDateDisplay(data.date);
 
   const ratePerGram = data.rate10g / 10;
+  el("rRatePerGram").textContent = ratePerGram ? formatINR(ratePerGram) : "________";
+
   const body = el("rItemBody");
   body.innerHTML = "";
 
-  let totalPcs = 0, totalGross = 0, totalNet = 0, totalValue = 0;
+  let totalGross = 0, totalNet = 0, totalFine = 0, totalValue = 0;
 
   data.rows.forEach((row, index) => {
-    totalPcs += row.pcs;
+    const purity = row.karat > 0 ? purityForKarat(row.karat) : 0;
+    const fineWeight = row.net * purity;
+
     totalGross += row.gross;
     totalNet += row.net;
+    totalFine += fineWeight;
     totalValue += row.value;
 
     const tr = document.createElement("tr");
     tr.innerHTML = `
       <td class="col-sn">${index + 1}</td>
       <td class="col-item">${escapeHtml(row.name)}</td>
-      <td class="col-pcs">${row.pcs}</td>
       <td class="col-wt">${formatWeight(row.gross)}</td>
       <td class="col-wt">${formatWeight(row.net)}</td>
       <td class="col-kt">${row.karat > 0 ? formatKtPercent(row.karat) : "—"}</td>
+      <td class="col-wt">${formatWeight(fineWeight)}</td>
       <td class="col-value">${formatINR(row.value)}</td>
     `;
     body.appendChild(tr);
@@ -325,14 +326,10 @@ function renderReport() {
     body.appendChild(tr);
   }
 
-  el("rTotalPcs").textContent = totalPcs;
   el("rTotalGross").textContent = formatWeight(totalGross);
   el("rTotalNet").textContent = formatWeight(totalNet);
+  el("rTotalFine").textContent = formatWeight(totalFine);
   el("rTotalValue").textContent = formatINR(totalValue);
-
-  el("rFees").textContent = `${formatINR(data.fees)}/-`;
-  el("rAcct").textContent = `SBI A/C - ${data.acct}`;
-  el("rIfsc").textContent = `IFSC Code: ${data.ifsc}`;
 }
 
 // Minimal HTML escaping for item names (defensive, since they're user text)
