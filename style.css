@@ -1,24 +1,24 @@
 /* ==========================================================
    SURANA JEWELLERS — Gold Valuation Report
-   Design: warm brass/ivory palette befitting a jewellery
-   business; utility grid for the input screen; a formal,
-   traditional bank-document look for the printed report.
+   Design: plain, simple utility form for the input screen —
+   just a clean calculator app; the printed report keeps its
+   formal bank-document look separately (see .report-* rules).
    ========================================================== */
 
 :root {
-  --ink: #241c14;
-  --ink-soft: #5b4f40;
-  --paper: #fbf8f2;
+  --ink: #1f2328;
+  --ink-soft: #626a72;
+  --paper: #f5f6f8;
   --paper-panel: #ffffff;
-  --line: #e4dbc9;
-  --line-strong: #cbb98f;
-  --brass: #9c6b2c;
-  --brass-deep: #7a4f1c;
-  --brass-pale: #f3e6cc;
-  --accent: #7c2d2d;
-  --danger: #9c3b3b;
-  --radius: 10px;
-  --shadow: 0 1px 2px rgba(36, 28, 20, 0.06), 0 8px 24px rgba(36, 28, 20, 0.06);
+  --line: #e1e4e8;
+  --line-strong: #c9ced4;
+  --brand: #2f6feb;
+  --brand-deep: #1f5fd6;
+  --brand-pale: #eaf1fd;
+  --accent: #2f6feb;
+  --danger: #c0392b;
+  --radius: 8px;
+  --shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
   font-size: 16px;
 }
 
@@ -29,7 +29,7 @@ html, body {
   padding: 0;
   background: var(--paper);
   color: var(--ink);
-  font-family: "Segoe UI", "Noto Sans", "Noto Sans Devanagari", system-ui, -apple-system, sans-serif;
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
 }
 
 h1, h2, h3 { margin: 0; }
@@ -49,7 +49,7 @@ button {
   align-items: center;
   justify-content: space-between;
   gap: 16px;
-  padding: 20px 32px;
+  padding: 16px 28px;
   background: var(--paper-panel);
   border-bottom: 1px solid var(--line);
   position: sticky;
@@ -60,33 +60,33 @@ button {
 .app-header-brand {
   display: flex;
   align-items: center;
-  gap: 14px;
+  gap: 12px;
 }
 
 .app-header-mark {
-  width: 44px;
-  height: 44px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, var(--brass), var(--brass-deep));
+  width: 38px;
+  height: 38px;
+  border-radius: 8px;
+  background: var(--brand);
   color: #fff;
   display: flex;
   align-items: center;
   justify-content: center;
   font-weight: 700;
   letter-spacing: 0.02em;
-  font-size: 0.95rem;
+  font-size: 0.88rem;
   flex-shrink: 0;
 }
 
 .app-header-brand h1 {
-  font-size: 1.15rem;
+  font-size: 1.05rem;
   font-weight: 700;
   color: var(--ink);
 }
 
 .app-header-brand p {
   margin: 2px 0 0;
-  font-size: 0.82rem;
+  font-size: 0.8rem;
   color: var(--ink-soft);
 }
 
@@ -116,11 +116,9 @@ button {
 }
 
 .card-title {
-  font-size: 0.78rem;
+  font-size: 0.95rem;
   font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  color: var(--brass-deep);
+  color: var(--ink);
   margin-bottom: 16px;
 }
 
@@ -182,13 +180,13 @@ button {
 
 .field input:focus,
 .field select:focus {
-  outline: 2px solid var(--brass);
+  outline: 2px solid var(--brand);
   outline-offset: 1px;
-  border-color: var(--brass);
+  border-color: var(--brand);
 }
 
 .readonly-input {
-  background: var(--brass-pale) !important;
+  background: var(--brand-pale) !important;
   color: var(--ink-soft);
 }
 
@@ -198,11 +196,11 @@ button {
 
 .readout {
   padding: 10px 12px;
-  background: var(--brass-pale);
+  background: var(--brand-pale);
   border: 1px solid var(--line-strong);
   border-radius: 8px;
   font-weight: 700;
-  color: var(--brass-deep);
+  color: var(--brand-deep);
   font-size: 0.95rem;
 }
 
@@ -245,7 +243,7 @@ button {
 }
 
 .btn-primary {
-  background: var(--brass-deep);
+  background: var(--brand-deep);
   color: #fff;
 }
 
@@ -265,7 +263,7 @@ button {
 }
 
 .btn-ghost:hover {
-  background: var(--brass-pale);
+  background: var(--brand-pale);
   color: var(--ink);
 }
 
@@ -346,9 +344,9 @@ button {
 }
 
 .cell-input:focus {
-  outline: 2px solid var(--brass);
+  outline: 2px solid var(--brand);
   outline-offset: 1px;
-  border-color: var(--brass);
+  border-color: var(--brand);
 }
 
 .item-karat-custom {
@@ -358,7 +356,7 @@ button {
 .value-cell {
   text-align: right;
   font-weight: 700;
-  color: var(--brass-deep);
+  color: var(--brand-deep);
   white-space: nowrap;
 }
 
@@ -387,7 +385,7 @@ button {
 
 .totals-row td:last-child,
 .totals-row td:nth-last-child(2) {
-  color: var(--brass-deep);
+  color: var(--brand-deep);
 }
 
 /* ---------------- Modals ---------------- */
@@ -458,10 +456,15 @@ button {
   min-height: 297mm;
   margin: 24px auto 60px;
   background: #fff;
-  padding: 14mm 16mm;
+  padding: 13mm 15mm;
   box-shadow: 0 4px 24px rgba(0,0,0,0.12);
   color: #111;
-  font-family: "Segoe UI", "Noto Sans", "Noto Sans Devanagari", Arial, sans-serif;
+  font-family: "Times New Roman", "Noto Serif", "Noto Sans Devanagari", Georgia, serif;
+  font-size: 0.92em;
+}
+
+.report-page * {
+  font-family: inherit;
 }
 
 .report-header-top {
@@ -478,7 +481,7 @@ button {
 }
 
 .report-shop-name {
-  font-size: 1.9rem;
+  font-size: 1.7rem;
   font-weight: 800;
   letter-spacing: 0.05em;
   color: #1a1208;
@@ -486,45 +489,84 @@ button {
 
 .report-tagline {
   margin: 4px 0 0;
-  font-size: 1rem;
+  font-size: 0.9rem;
   color: #333;
 }
 
 .report-proprietor {
   margin: 4px 0 0;
-  font-size: 0.95rem;
+  font-size: 0.85rem;
   font-weight: 600;
   color: #222;
 }
 
-.report-gstin {
+.report-annexure {
   text-align: right;
-  font-size: 0.82rem;
-  font-weight: 700;
+  font-size: 0.8rem;
+  font-style: italic;
   white-space: nowrap;
   padding-top: 4px;
 }
 
-.report-header-rule {
-  border-top: 2.5px solid #1a1208;
-  margin-top: 10px;
-}
-
-.report-header-address {
+.report-header-contact {
   text-align: center;
-  margin-top: 6px;
-}
-
-.report-header-address p {
-  margin: 1px 0;
-  font-size: 0.8rem;
+  margin-top: 8px;
+  font-size: 0.72rem;
   color: #333;
 }
 
-.report-meta-row {
-  display: flex;
-  justify-content: space-between;
+.report-header-contact p {
+  margin: 2px 0;
+}
+
+.contact-line-2 {
+  font-weight: 600;
+}
+
+.report-header-rule {
+  border-top: 2.5px solid #1a1208;
+  border-bottom: 1px solid #1a1208;
+  height: 3px;
+  margin-top: 8px;
+}
+
+.report-title {
+  text-align: center;
+  font-size: 1.1rem;
+  font-weight: 800;
+  text-decoration: underline;
+  text-underline-offset: 4px;
   margin-top: 16px;
+  letter-spacing: 0.03em;
+}
+
+.report-salutation {
+  margin-top: 16px;
+  font-size: 0.92rem;
+  line-height: 1.5;
+}
+
+.report-dear-sir {
+  margin-top: 16px;
+  font-size: 0.92rem;
+}
+
+.report-body-text {
+  margin-top: 8px;
+  font-size: 0.92rem;
+  line-height: 1.9;
+  text-align: justify;
+}
+
+.fill-in {
+  border-bottom: 1px solid #1a1208;
+  padding: 0 4px;
+  font-weight: 600;
+}
+
+.report-rate-line {
+  margin-top: 10px;
+  font-weight: 700;
   font-size: 0.92rem;
 }
 
@@ -532,63 +574,28 @@ button {
   font-weight: 700;
 }
 
-.report-title {
-  text-align: center;
-  font-size: 1.15rem;
-  font-weight: 800;
-  text-decoration: underline;
-  text-underline-offset: 4px;
-  margin-top: 14px;
-  letter-spacing: 0.01em;
-}
-
-.report-bank-line {
-  text-align: center;
-  font-weight: 700;
-  margin: 10px 0 0;
-  font-size: 0.95rem;
-}
-
-.report-customer {
-  margin-top: 14px;
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  font-size: 0.92rem;
-}
-
-.report-customer-row .meta-label {
-  display: inline-block;
-  min-width: 70px;
-}
-
-.report-rate-line {
-  margin-top: 12px;
-  font-weight: 700;
-  font-size: 0.95rem;
-}
-
 .report-table {
   width: 100%;
   border-collapse: collapse;
   margin-top: 10px;
-  font-size: 0.88rem;
+  font-size: 0.8rem;
 }
 
 .report-table th,
 .report-table td {
   border: 1px solid #1a1208;
-  padding: 6px 8px;
+  padding: 5px 6px;
 }
 
 .report-table th {
   background: #f2ead6;
   font-weight: 700;
   text-align: center;
+  font-size: 0.72rem;
+  line-height: 1.3;
 }
 
 .report-table td.col-item { text-align: left; }
-.report-table td.col-pcs,
 .report-table td.col-sn { text-align: center; }
 .report-table td.col-wt,
 .report-table td.col-value { text-align: right; }
@@ -599,57 +606,82 @@ button {
   background: #f7f1e0;
 }
 
+.report-declaration {
+  margin-top: 20px;
+  font-size: 0.9rem;
+  line-height: 1.7;
+  text-align: justify;
+}
+
 .report-footer-block {
   display: flex;
   justify-content: space-between;
   align-items: flex-end;
-  margin-top: 34px;
+  margin-top: 46px;
   gap: 30px;
 }
 
-.report-signature {
-  flex: 1;
+.report-place-date p {
+  margin: 8px 0;
+  font-size: 0.92rem;
+}
+
+.report-yours {
+  text-align: right;
+}
+
+.yours-line {
+  margin: 0 0 6px;
+  font-size: 0.92rem;
+  font-style: italic;
 }
 
 .signature-space {
-  height: 60px;
+  height: 50px;
+  width: 240px;
+  margin-left: auto;
   border-bottom: 1px solid #1a1208;
-  width: 220px;
+}
+
+.report-borrower-block .signature-space {
+  border-bottom: 1px solid #1a1208;
+}
+
+.signature-name {
+  margin: 6px 0 0;
+  font-size: 0.95rem;
+  font-weight: 800;
+  text-align: right;
+  letter-spacing: 0.01em;
 }
 
 .signature-label {
-  margin: 6px 0 0;
-  font-size: 0.85rem;
-  font-weight: 700;
-}
-
-.report-bank-details {
-  text-align: right;
-  font-size: 0.9rem;
-}
-
-.report-bank-details p {
-  margin: 3px 0;
+  margin: 1px 0 0;
+  font-size: 0.82rem;
   font-weight: 600;
-}
-
-.report-footer {
-  margin-top: 26px;
-  border-top: 1px solid #1a1208;
-  padding-top: 8px;
-  text-align: center;
-}
-
-.report-footer p {
-  margin: 1px 0;
-  font-size: 0.78rem;
   color: #333;
+  text-align: right;
 }
 
-.footer-shop-name {
-  font-weight: 800 !important;
-  font-size: 0.85rem !important;
-  color: #1a1208 !important;
+.report-borrower-block {
+  margin-top: 50px;
+}
+
+.report-borrower-block .yours-line {
+  margin: 0 0 6px;
+}
+
+.report-borrower-block .signature-space {
+  margin-left: 0;
+  width: 240px;
+}
+
+.report-borrower-block .signature-label {
+  text-align: left;
+  font-weight: 700;
+  font-size: 0.85rem;
+  color: #1a1208;
+  margin-top: 6px;
 }
 
 /* ==========================================================
