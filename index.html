@@ -116,6 +116,7 @@
               <th class="col-item">Item</th>
               <th class="col-pcs">Pcs</th>
               <th class="col-wt">Gross Wt (g)</th>
+              <th class="col-wt" title="Calculated automatically: Gross Wt − Net Wt">Stone Wt (g)</th>
               <th class="col-wt">Net Wt (g)</th>
               <th class="col-kt">Karat</th>
               <th class="col-value">Value (₹)</th>
@@ -130,6 +131,7 @@
               <td colspan="2">Total</td>
               <td id="totalPcs">0</td>
               <td id="totalGross">0.000</td>
+              <td id="totalStone">0.000</td>
               <td id="totalNet">0.000</td>
               <td></td>
               <td id="totalValue">₹0</td>
@@ -262,7 +264,6 @@
         <p class="contact-line-2">
           Phone: <span id="rPhone">9425403001</span>
           &nbsp;|&nbsp; GSTIN: <span id="rGstin">23AYAPS910QIZZ</span>
-          &nbsp;|&nbsp; A/c: <span id="rAcct">11226812494</span>
         </p>
       </div>
       <div class="report-header-rule"></div>
@@ -285,35 +286,51 @@
       and the exact weight, purity of the metal and market value of each item as on date are indicated below.
     </p>
 
-    <p class="report-rate-line">Market rate per gram: Rs. <span class="fill-in" id="rRatePerGram">________</span></p>
+    <p class="report-rate-line">Market rate per gram (24K fine gold): <span class="fill-in" id="rRatePerGram">________</span></p>
 
-    <table class="report-table">
-      <thead>
-        <tr>
-          <th class="col-sn">Sl No.</th>
-          <th class="col-item">Description of the article</th>
-          <th class="col-wt">Gross Weight</th>
-          <th class="col-wt">Net Weight</th>
-          <th class="col-kt">Purity (Karat)</th>
-          <th class="col-wt">Fine Weight</th>
-          <th class="col-value">Market Value Rs.</th>
-        </tr>
-      </thead>
-      <tbody id="rItemBody">
-        <!-- injected -->
-      </tbody>
-      <tfoot>
-        <tr class="report-totals-row">
-          <td>Total</td>
-          <td></td>
-          <td id="rTotalGross">0.000</td>
-          <td id="rTotalNet">0.000</td>
-          <td></td>
-          <td id="rTotalFine">0.000</td>
-          <td id="rTotalValue">₹0</td>
-        </tr>
-      </tfoot>
-    </table>
+    <div class="report-table-wrap">
+      <table class="report-table">
+        <colgroup>
+          <col style="width:6%">
+          <col style="width:18%">
+          <col style="width:6%">
+          <col style="width:11.5%">
+          <col style="width:10.5%">
+          <col style="width:11.5%">
+          <col style="width:13.5%">
+          <col style="width:11%">
+          <col style="width:12%">
+        </colgroup>
+        <thead>
+          <tr>
+            <th>Sl. No.</th>
+            <th>Description of the Article</th>
+            <th>No. of Pcs</th>
+            <th>Gross Weight</th>
+            <th>Stone Weight</th>
+            <th>Net Weight</th>
+            <th>Purity (Karat)</th>
+            <th>Fine Weight</th>
+            <th>Market Value (Rs.)</th>
+          </tr>
+        </thead>
+        <tbody id="rItemBody">
+          <!-- injected -->
+        </tbody>
+        <tfoot>
+          <tr class="report-totals-row">
+            <td colspan="2" class="rt-left">Total</td>
+            <td class="rt-center" id="rTotalPcs">0</td>
+            <td class="rt-right" id="rTotalGross">0.000 g</td>
+            <td class="rt-right" id="rTotalStone">0.000 g</td>
+            <td class="rt-right" id="rTotalNet">0.000 g</td>
+            <td></td>
+            <td class="rt-right" id="rTotalFine">0.000 g</td>
+            <td class="rt-right" id="rTotalValue">₹0</td>
+          </tr>
+        </tfoot>
+      </table>
+    </div>
 
     <p class="report-declaration">
       I solemnly declare that weight purity of the Gold Ornaments/ Precious stones indicated above
@@ -322,25 +339,33 @@
     </p>
 
     <div class="report-footer-block">
-      <div class="report-place-date">
-        <p>Place <span class="fill-in" id="rPlace">___________</span></p>
-        <p>Date <span class="fill-in" id="rSignDate">__________</span></p>
+
+      <div class="report-footer-left">
+        <div class="report-place-date">
+          <p><span class="meta-label">Place:</span> <span class="fill-in" id="rPlace">___________</span></p>
+          <p><span class="meta-label">Date:</span> <span class="fill-in" id="rSignDate">__________</span></p>
+        </div>
+        <div class="report-borrower-block">
+          <div class="signature-space"></div>
+          <p class="signature-label">Signature of Borrower</p>
+        </div>
       </div>
-      <div class="report-yours">
-        <p class="yours-line">Yours</p>
+
+      <div class="report-footer-right">
+        <p class="yours-line">Yours faithfully,</p>
         <div class="signature-space"></div>
         <p class="signature-name">Naveen Surana</p>
-        <p class="signature-label">Surana Jewellers</p>
-        <p class="signature-label">A/C: 11226812494</p>
-        <p class="signature-label">IFSC: SBIN0000499</p>
-        <p class="signature-label">Appraiser</p>
+        <p class="signature-role">Appraiser &mdash; Surana Jewellers</p>
+        <dl class="appraiser-details">
+          <dt>Fees</dt>
+          <dd id="rFees">__________</dd>
+          <dt id="rBankLabel">SBI A/C No.</dt>
+          <dd id="rSigAcct">__________</dd>
+          <dt>IFSC Code</dt>
+          <dd id="rSigIfsc">__________</dd>
+        </dl>
       </div>
-    </div>
 
-    <div class="report-borrower-block">
-      <p class="yours-line">Faithfully</p>
-      <div class="signature-space"></div>
-      <p class="signature-label">Signature of Borrower</p>
     </div>
 
   </div>
@@ -353,6 +378,7 @@
     <td class="col-item"><input type="text" class="cell-input item-name" placeholder="e.g. Necklace"></td>
     <td class="col-pcs"><input type="number" class="cell-input item-pcs" min="0" step="1" value="1"></td>
     <td class="col-wt"><input type="number" class="cell-input item-gross" min="0" step="0.001" placeholder="0.000"></td>
+    <td class="col-wt stone-cell" title="Gross Wt − Net Wt">0.000</td>
     <td class="col-wt"><input type="number" class="cell-input item-net" min="0" step="0.001" placeholder="0.000"></td>
     <td class="col-kt">
       <select class="cell-input item-karat">
