@@ -83,6 +83,18 @@ function formatWeight(w) {
   return n.toFixed(3);
 }
 
+// Printed report: every weight is shown with its unit, e.g. "17.250 g"
+// (non-breaking space so the value and "g" never wrap onto two lines)
+function formatWeightG(w) {
+  return formatWeight(w) + "\u00A0g";
+}
+
+// Round to 3 decimals (milligram) — the small epsilon stops float noise
+// such as 17.250 - 17.100 = 0.14999999999999858 from rounding the wrong way
+function round3(n) {
+  return Math.round((Number(n) || 0) * 1000 + 1e-7) / 1000;
+}
+
 function formatKtPercent(karat) {
   const purity = purityForKarat(karat) * 100;
   const truncated = Math.floor(purity * 10) / 10;
@@ -195,6 +207,22 @@ function getEffectiveKarat(tr) {
    6. CALCULATIONS
    ---------------------------------------------------------- */
 
+// One place that works out every derived number for a jewellery row, so the
+// input screen and the printed report can never disagree.
+//   stone = Gross Wt − Net Wt   (never negative)
+//   fine  = Net Wt × purity
+//   value = Net Wt × purity × rate per gram (rounded to a whole rupee)
+function computeItem(gross, net, karat, ratePerGram) {
+  const purity = karat > 0 ? purityForKarat(karat) : 0;
+  return {
+    purity,
+    stone: Math.max(0, round3(gross - net)),
+    netExceedsGross: net > gross,
+    fine: round3(net * purity),
+    value: Math.round(net * purity * ratePerGram + 1e-7),
+  };
+}
+
 function getRatePerGram() {
   const rate10g = Number(el("rate24k").value) || 0;
   return rate10g / 10;
@@ -207,6 +235,7 @@ function recalculate() {
   const rows = itemTableBody.querySelectorAll(".item-row");
   let totalPcs = 0;
   let totalGross = 0;
+  let totalStone = 0;
   let totalNet = 0;
   let totalValue = 0;
 
@@ -215,20 +244,28 @@ function recalculate() {
     const gross = Number(tr.querySelector(".item-gross").value) || 0;
     const net = Number(tr.querySelector(".item-net").value) || 0;
     const karat = getEffectiveKarat(tr);
-    const purity = karat > 0 ? purityForKarat(karat) : 0;
-    const value = net * purity * ratePerGram;
+    const item = computeItem(gross, net, karat, ratePerGram);
 
-    tr.querySelector(".value-cell").textContent = formatINR(value);
+    tr.querySelector(".value-cell").textContent = formatINR(item.value);
+
+    const stoneCell = tr.querySelector(".stone-cell");
+    stoneCell.textContent = formatWeight(item.stone);
+    stoneCell.classList.toggle("invalid", item.netExceedsGross);
+    stoneCell.title = item.netExceedsGross
+      ? "Net weight is more than gross weight — please check"
+      : "Gross Wt − Net Wt";
 
     totalPcs += pcs;
     totalGross += gross;
+    totalStone += item.stone;
     totalNet += net;
-    totalValue += value;
+    totalValue += item.value;   // sum of the rounded row values, so the column adds up
   });
 
   el("totalPcs").textContent = totalPcs;
-  el("totalGross").textContent = formatWeight(totalGross);
-  el("totalNet").textContent = formatWeight(totalNet);
+  el("totalGross").textContent = formatWeight(round3(totalGross));
+  el("totalStone").textContent = formatWeight(round3(totalStone));
+  el("totalNet").textContent = formatWeight(round3(totalNet));
   el("totalValue").textContent = formatINR(totalValue);
 }
 
@@ -243,9 +280,8 @@ function collectReportData() {
     const gross = Number(tr.querySelector(".item-gross").value) || 0;
     const net = Number(tr.querySelector(".item-net").value) || 0;
     const karat = getEffectiveKarat(tr);
-    const purity = karat > 0 ? purityForKarat(karat) : 0;
-    const value = net * purity * getRatePerGram();
-    return { name, pcs, gross, net, karat, value };
+    const item = computeItem(gross, net, karat, getRatePerGram());
+    return { name, pcs, gross, net, karat, stone: item.stone, fine: item.fine, value: item.value };
   });
 
   return {
@@ -260,6 +296,7 @@ function collectReportData() {
     rate10g: Number(el("rate24k").value) || 0,
     rows,
     fees: Number(el("feesInput").value) || 0,
+    bank: el("bankName").value.trim() || CONFIG.defaultBank,
     acct: el("acctInput").value.trim() || CONFIG.defaultAcct,
     ifsc: el("ifscInput").value.trim() || CONFIG.defaultIfsc,
   };
@@ -281,7 +318,6 @@ function renderReport() {
 
   const branchLabel = data.branch === "mahendiwada" ? "Waraseoni (Mahendiwada)" : "Waraseoni";
   el("rBranchLine").textContent = `${branchLabel} Branch`;
-  el("rAcct").textContent = data.acct;
 
   el("rCustName").textContent = data.custName;
   el("rCustSo").textContent = data.custSo;
@@ -296,40 +332,49 @@ function renderReport() {
   const body = el("rItemBody");
   body.innerHTML = "";
 
-  let totalGross = 0, totalNet = 0, totalFine = 0, totalValue = 0;
+  let totalPcs = 0, totalGross = 0, totalStone = 0, totalNet = 0, totalFine = 0, totalValue = 0;
 
   data.rows.forEach((row, index) => {
-    const purity = row.karat > 0 ? purityForKarat(row.karat) : 0;
-    const fineWeight = row.net * purity;
-
+    totalPcs += row.pcs;
     totalGross += row.gross;
+    totalStone += row.stone;
     totalNet += row.net;
-    totalFine += fineWeight;
-    totalValue += row.value;
+    totalFine += row.fine;     // totals are sums of the printed (rounded) row figures,
+    totalValue += row.value;   // so every column adds up exactly on paper
 
     const tr = document.createElement("tr");
     tr.innerHTML = `
-      <td class="col-sn">${index + 1}</td>
-      <td class="col-item">${escapeHtml(row.name)}</td>
-      <td class="col-wt">${formatWeight(row.gross)}</td>
-      <td class="col-wt">${formatWeight(row.net)}</td>
-      <td class="col-kt">${row.karat > 0 ? formatKtPercent(row.karat) : "—"}</td>
-      <td class="col-wt">${formatWeight(fineWeight)}</td>
-      <td class="col-value">${formatINR(row.value)}</td>
+      <td class="rt-center">${index + 1}</td>
+      <td class="rt-left">${escapeHtml(row.name)}</td>
+      <td class="rt-center">${row.pcs}</td>
+      <td class="rt-right">${formatWeightG(row.gross)}</td>
+      <td class="rt-right">${formatWeightG(row.stone)}</td>
+      <td class="rt-right">${formatWeightG(row.net)}</td>
+      <td class="rt-center">${row.karat > 0 ? formatKtPercent(row.karat) : "—"}</td>
+      <td class="rt-right">${formatWeightG(row.fine)}</td>
+      <td class="rt-right">${formatINR(row.value)}</td>
     `;
     body.appendChild(tr);
   });
 
   if (data.rows.length === 0) {
     const tr = document.createElement("tr");
-    tr.innerHTML = `<td colspan="7" style="text-align:center; color:#777;">No items added</td>`;
+    tr.innerHTML = `<td colspan="9" style="text-align:center; color:#777;">No items added</td>`;
     body.appendChild(tr);
   }
 
-  el("rTotalGross").textContent = formatWeight(totalGross);
-  el("rTotalNet").textContent = formatWeight(totalNet);
-  el("rTotalFine").textContent = formatWeight(totalFine);
+  el("rTotalPcs").textContent = totalPcs;
+  el("rTotalGross").textContent = formatWeightG(round3(totalGross));
+  el("rTotalStone").textContent = formatWeightG(round3(totalStone));
+  el("rTotalNet").textContent = formatWeightG(round3(totalNet));
+  el("rTotalFine").textContent = formatWeightG(round3(totalFine));
   el("rTotalValue").textContent = formatINR(totalValue);
+
+  // Appraiser signature block: fees + bank details
+  el("rFees").textContent = data.fees ? formatINR(data.fees) : "__________";
+  el("rBankLabel").textContent = `${data.bank} A/C No.`;
+  el("rSigAcct").textContent = data.acct;
+  el("rSigIfsc").textContent = data.ifsc;
 }
 
 // Minimal HTML escaping for item names (defensive, since they're user text)
