@@ -147,6 +147,11 @@ function addRow(prefill) {
     tr.querySelector(".item-pcs").value = prefill.pcs ?? 1;
     tr.querySelector(".item-gross").value = prefill.gross ?? "";
     tr.querySelector(".item-net").value = prefill.net ?? "";
+    if (prefill.stone !== undefined && prefill.net === undefined) {
+      tr.querySelector(".item-stone").value = prefill.stone;
+      tr.dataset.driver = "stone";
+    }
+    syncWeights(tr);
   }
 
   itemTableBody.appendChild(tr);
@@ -159,13 +164,31 @@ function attachRowListeners(tr) {
   const nameInput = tr.querySelector(".item-name");
   const pcsInput = tr.querySelector(".item-pcs");
   const grossInput = tr.querySelector(".item-gross");
+  const stoneInput = tr.querySelector(".item-stone");
   const netInput = tr.querySelector(".item-net");
   const karatSelect = tr.querySelector(".item-karat");
   const karatCustom = tr.querySelector(".item-karat-custom");
   const delBtn = tr.querySelector(".row-del-btn");
 
-  [nameInput, pcsInput, grossInput, netInput].forEach((input) => {
+  [nameInput, pcsInput].forEach((input) => {
     input.addEventListener("input", recalculate);
+  });
+
+  // Gross + (Stone or Net): the field you type in last is the "driver",
+  // the other one is worked out from Gross.
+  grossInput.addEventListener("input", () => {
+    syncWeights(tr);
+    recalculate();
+  });
+  netInput.addEventListener("input", () => {
+    tr.dataset.driver = "net";
+    syncWeights(tr);
+    recalculate();
+  });
+  stoneInput.addEventListener("input", () => {
+    tr.dataset.driver = "stone";
+    syncWeights(tr);
+    recalculate();
   });
 
   karatSelect.addEventListener("change", () => {
@@ -187,11 +210,54 @@ function attachRowListeners(tr) {
   });
 }
 
+// Keeps Stone Wt and Net Wt consistent with Gross Wt (Net = Gross − Stone).
+// Whichever of the two the user typed in last stays as typed; the other is
+// filled in and tinted so it's clear it's automatic.
+function syncWeights(tr) {
+  const grossInput = tr.querySelector(".item-gross");
+  const stoneInput = tr.querySelector(".item-stone");
+  const netInput = tr.querySelector(".item-net");
+  const driverIsStone = tr.dataset.driver === "stone";
+  const driver = driverIsStone ? stoneInput : netInput;
+  const other = driverIsStone ? netInput : stoneInput;
+
+  const hasGross = grossInput.value !== "";
+  const hasDriver = driver.value !== "";
+  const gross = Number(grossInput.value) || 0;
+  const d = Number(driver.value) || 0;
+
+  let invalid = false;
+  if (!hasDriver || !hasGross) {
+    other.value = "";
+  } else if (d > gross) {
+    invalid = true;          // stone/net can't be more than gross
+    other.value = "0";
+  } else {
+    other.value = String(round3(gross - d));
+  }
+
+  driver.classList.remove("auto-filled");
+  other.classList.toggle("auto-filled", hasDriver && hasGross);
+  driver.classList.toggle("invalid", invalid);
+  driver.title = invalid ? "Cannot be more than Gross Wt — please check" : "";
+}
+
 function renumberRows() {
   const rows = itemTableBody.querySelectorAll(".item-row");
   rows.forEach((row, index) => {
     row.querySelector(".sn-cell").textContent = index + 1;
   });
+}
+
+// A row the user never touched (no name, no weights) must not appear on the
+// report or count towards totals — the form starts with 3 empty rows.
+function isBlankRow(tr) {
+  return (
+    tr.querySelector(".item-name").value.trim() === "" &&
+    tr.querySelector(".item-gross").value === "" &&
+    tr.querySelector(".item-stone").value === "" &&
+    tr.querySelector(".item-net").value === ""
+  );
 }
 
 function getEffectiveKarat(tr) {
@@ -216,7 +282,7 @@ function computeItem(gross, net, karat, ratePerGram) {
   const purity = karat > 0 ? purityForKarat(karat) : 0;
   return {
     purity,
-    stone: Math.max(0, round3(gross - net)),
+    stone: net > 0 ? Math.max(0, round3(gross - net)) : 0,   // row not filled in yet -> no stone
     netExceedsGross: net > gross,
     fine: round3(net * purity),
     value: Math.round(net * purity * ratePerGram + 1e-7),
@@ -240,20 +306,13 @@ function recalculate() {
   let totalValue = 0;
 
   rows.forEach((tr) => {
-    const pcs = Number(tr.querySelector(".item-pcs").value) || 0;
+    const pcs = isBlankRow(tr) ? 0 : Number(tr.querySelector(".item-pcs").value) || 0;
     const gross = Number(tr.querySelector(".item-gross").value) || 0;
     const net = Number(tr.querySelector(".item-net").value) || 0;
     const karat = getEffectiveKarat(tr);
     const item = computeItem(gross, net, karat, ratePerGram);
 
     tr.querySelector(".value-cell").textContent = formatINR(item.value);
-
-    const stoneCell = tr.querySelector(".stone-cell");
-    stoneCell.textContent = formatWeight(item.stone);
-    stoneCell.classList.toggle("invalid", item.netExceedsGross);
-    stoneCell.title = item.netExceedsGross
-      ? "Net weight is more than gross weight — please check"
-      : "Gross Wt − Net Wt";
 
     totalPcs += pcs;
     totalGross += gross;
@@ -274,7 +333,7 @@ function recalculate() {
    ---------------------------------------------------------- */
 
 function collectReportData() {
-  const rows = Array.from(itemTableBody.querySelectorAll(".item-row")).map((tr) => {
+  const rows = Array.from(itemTableBody.querySelectorAll(".item-row")).filter((tr) => !isBlankRow(tr)).map((tr) => {
     const name = tr.querySelector(".item-name").value.trim() || "—";
     const pcs = Number(tr.querySelector(".item-pcs").value) || 0;
     const gross = Number(tr.querySelector(".item-gross").value) || 0;
@@ -375,6 +434,45 @@ function renderReport() {
   el("rBankLabel").textContent = `${data.bank} A/C No.`;
   el("rSigAcct").textContent = data.acct;
   el("rSigIfsc").textContent = data.ifsc;
+
+  updatePrintFit();
+}
+
+/* ----------------------------------------------------------
+   Fit-to-one-page.
+   Phones and browsers add their own print margins (iPhone Safari takes
+   ~15 mm at the top and bottom for its URL / date / "Page 1 of 2" bands)
+   and may use different fonts, so a report with many rows could spill
+   onto a 2nd page. The sheet is built in em units, so it can be shrunk
+   evenly. Here we measure how tall it is on THIS device (with THIS
+   device's fonts) and choose the print font-size:
+     - 14px  = exactly A4 width, used whenever the sheet fits, or
+     - smaller, just enough to fit PRINT_HEIGHT_BUDGET_MM.
+   The budget is deliberately below the usable height of every device
+   we know of (iPhone A4: ~267 mm, Android Letter: ~279 mm).
+   ---------------------------------------------------------- */
+const PRINT_HEIGHT_BUDGET_MM = 250;
+const PRINT_BASE_FONT_PX = 14;
+
+function updatePrintFit() {
+  const page = el("reportPage");
+  if (!page) return;
+  const clone = page.cloneNode(true);
+  clone.querySelectorAll("[id]").forEach((n) => n.removeAttribute("id"));
+  clone.removeAttribute("id");
+  Object.assign(clone.style, {
+    position: "fixed", left: "-10000px", top: "0", visibility: "hidden",
+    fontSize: PRINT_BASE_FONT_PX + "px", minHeight: "0", margin: "0", boxShadow: "none",
+  });
+  document.body.appendChild(clone);
+  const heightPx = clone.getBoundingClientRect().height;
+  document.body.removeChild(clone);
+  if (!(heightPx > 0)) return;
+
+  const budgetPx = (PRINT_HEIGHT_BUDGET_MM / 25.4) * 96;
+  const heightEm = (heightPx / PRINT_BASE_FONT_PX) * 1.03;   // +3 % safety
+  const fs = Math.min(PRINT_BASE_FONT_PX, budgetPx / heightEm);
+  page.style.setProperty("--print-fs", fs.toFixed(2) + "px");
 }
 
 // Minimal HTML escaping for item names (defensive, since they're user text)
@@ -522,6 +620,10 @@ function init() {
   el("confirmModal").addEventListener("click", (e) => {
     if (e.target.id === "confirmModal") closeConfirmModal();
   });
+
+  // keep the fit-to-page number fresh right before printing (and once fonts are ready)
+  window.addEventListener("beforeprint", updatePrintFit);
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(updatePrintFit);
 
   recalculate();
 }
