@@ -353,15 +353,14 @@ button {
   margin-top: 4px;
 }
 
-/* Calculated Gross − Net; lines up with the text inside the input boxes */
-.stone-cell {
-  padding-left: 17px !important;
-  font-weight: 600;
+/* Stone Wt / Net Wt: whichever one you did not type is filled in for you */
+.cell-input.auto-filled {
+  background: var(--brand-pale);
   color: var(--ink-soft);
-  white-space: nowrap;
 }
 
-.stone-cell.invalid {
+.cell-input.invalid {
+  border-color: var(--danger);
   color: var(--danger);
 }
 
@@ -452,9 +451,15 @@ button {
 
 /* ==========================================================
    PRINTABLE REPORT
-   Formal bank-document look. Layout, top to bottom:
+   Formal bank-document look, top to bottom:
      letterhead -> title -> addressee -> certificate text
      -> rate -> item table -> declaration -> signature area
+
+   The whole sheet is drawn in em units, so it scales as ONE piece:
+   - on screen: 210 mm wide (14px base); on a phone it shrinks to fit
+   - when printing: script.js measures how tall the sheet is on THIS device
+     (its fonts, its row count) and, only if it is taller than one safe
+     A4 page, shrinks the whole sheet evenly (--print-fs) so it still fits.
    ========================================================== */
 
 .report-toolbar {
@@ -467,11 +472,11 @@ button {
 }
 
 .report-page {
-  width: 210mm;
-  min-height: 297mm;
+  width: 56.7em;              /* = 210mm at 14px */
+  min-height: 80.2em;         /* = 297mm at 14px */
   margin: 24px auto 60px;
   background: #fff;
-  padding: 12mm 15mm;
+  padding: 2.2em 3.9em;
   box-shadow: 0 4px 24px rgba(0,0,0,0.12);
   color: #111;
   font-family: "Times New Roman", "Noto Serif", "Noto Sans Devanagari", Georgia, serif;
@@ -493,7 +498,7 @@ button {
   display: grid;
   grid-template-columns: 1fr auto 1fr;
   align-items: start;
-  gap: 8px;
+  gap: 0.57em;
 }
 
 .report-header-center {
@@ -501,42 +506,42 @@ button {
 }
 
 .report-shop-name {
-  font-size: 26px;
+  white-space: nowrap;
+  font-size: 1.857em;
   font-weight: 800;
   letter-spacing: 0.05em;
   color: #111;
 }
 
 .report-tagline {
-  margin-top: 3px !important;
-  font-size: 14px;
+  margin-top: 0.21em !important;
   color: #222;
 }
 
 .report-proprietor {
-  margin-top: 3px !important;
-  font-size: 13.5px;
+  margin-top: 0.21em !important;
+  font-size: 0.964em;
   font-weight: 600;
   color: #111;
 }
 
 .report-annexure {
   text-align: right;
-  font-size: 12.5px;
+  font-size: 0.893em;
   font-style: italic;
   white-space: nowrap;
-  padding-top: 4px;
+  padding-top: 0.29em;
 }
 
 .report-header-contact {
   text-align: center;
-  margin-top: 7px;
-  font-size: 11.5px;
+  margin-top: 0.5em;
+  font-size: 0.821em;
   color: #222;
 }
 
 .report-header-contact p {
-  margin: 2px 0;
+  margin: 0.17em 0;
 }
 
 .contact-line-2 {
@@ -544,47 +549,47 @@ button {
 }
 
 .report-header-rule {
-  border-top: 2.5px solid #111;
+  border-top: 0.18em solid #111;
   border-bottom: 1px solid #111;
-  height: 3px;
-  margin-top: 8px;
+  height: 0.21em;
+  margin-top: 0.57em;
 }
 
 /* ---------- Title, addressee, certificate text ---------- */
 
 .report-title {
   text-align: center;
-  font-size: 17px;
+  font-size: 1.214em;
   font-weight: 800;
   text-decoration: underline;
-  text-underline-offset: 4px;
-  margin-top: 14px;
+  text-underline-offset: 0.29em;
+  margin-top: 0.75em;
   letter-spacing: 0.03em;
 }
 
 .report-salutation {
-  margin-top: 14px;
+  margin-top: 0.75em;
   line-height: 1.5;
 }
 
 .report-dear-sir {
-  margin-top: 12px !important;
+  margin-top: 0.6em !important;
 }
 
 .report-body-text {
-  margin-top: 8px !important;
-  line-height: 1.75;
+  margin-top: 0.45em !important;
+  line-height: 1.6;
   text-align: justify;
 }
 
 .fill-in {
   border-bottom: 1px solid #111;
-  padding: 0 4px;
+  padding: 0 0.29em;
   font-weight: 600;
 }
 
 .report-rate-line {
-  margin-top: 10px !important;
+  margin-top: 0.6em !important;
   font-weight: 700;
 }
 
@@ -597,33 +602,33 @@ button {
 .report-table {
   width: 100%;
   border-collapse: collapse;
-  table-layout: fixed;
-  margin-top: 8px;
-  font-size: 12.5px;
+  margin-top: 0.5em;
+  font-size: 0.893em;
   font-variant-numeric: tabular-nums;
 }
 
 .report-table th,
 .report-table td {
   border: 1px solid #111;
-  padding: 6px 5px;
+  padding: 0.36em 0.4em;
   vertical-align: middle;
-  overflow-wrap: anywhere;
 }
 
 .report-table th {
   background: #ececec;
   font-weight: 700;
   text-align: center;
-  font-size: 11.5px;
+  font-size: 0.92em;
   line-height: 1.25;
   -webkit-print-color-adjust: exact;
   print-color-adjust: exact;
 }
 
-.report-table .rt-left   { text-align: left; }
-.report-table .rt-center { text-align: center; }
+/* Numbers, pieces and purity never wrap; only the description may. */
+.report-table .rt-left   { text-align: left; overflow-wrap: break-word; }
+.report-table .rt-center { text-align: center; white-space: nowrap; }
 .report-table .rt-right  { text-align: right; white-space: nowrap; }
+.report-table th:nth-child(2) { width: 22%; }
 
 .report-totals-row td {
   font-weight: 800;
@@ -633,7 +638,7 @@ button {
 }
 
 .report-declaration {
-  margin-top: 10px !important;
+  margin-top: 0.6em !important;
   line-height: 1.4;
   text-align: justify;
 }
@@ -644,8 +649,8 @@ button {
   display: flex;
   justify-content: space-between;
   align-items: stretch;
-  gap: 24px;
-  margin-top: 16px;
+  gap: 1.71em;
+  margin-top: 0.9em;
 }
 
 /* left: place / date at the top, borrower's signature at the bottom */
@@ -656,11 +661,11 @@ button {
 }
 
 .report-place-date p {
-  margin: 0 0 8px;
+  margin: 0 0 0.57em;
 }
 
 .report-borrower-block .signature-space {
-  width: 62mm;
+  width: 16.7em;
 }
 
 .report-borrower-block .signature-label {
@@ -669,7 +674,7 @@ button {
 
 /* right: appraiser's signature, name, then fees and bank details */
 .report-footer-right {
-  width: 80mm;
+  width: 21.6em;
 }
 
 .yours-line {
@@ -677,35 +682,35 @@ button {
 }
 
 .signature-space {
-  height: 44px;
+  height: 2.5em;
   border-bottom: 1px solid #111;
 }
 
 .signature-name {
-  margin-top: 6px !important;
-  font-size: 15px;
+  margin-top: 0.43em !important;
+  font-size: 1.071em;
   font-weight: 800;
 }
 
 .signature-role {
-  font-size: 12.5px;
+  font-size: 0.893em;
   color: #222;
 }
 
 .signature-label {
-  margin-top: 5px !important;
-  font-size: 12.5px;
+  margin-top: 0.36em !important;
+  font-size: 0.893em;
 }
 
 .appraiser-details {
   display: grid;
   grid-template-columns: auto 1fr;
-  column-gap: 12px;
-  row-gap: 4px;
-  margin: 10px 0 0;
-  padding-top: 8px;
+  column-gap: 0.92em;
+  row-gap: 0.31em;
+  margin: 0.6em 0 0;
+  padding-top: 0.5em;
   border-top: 1px solid #111;
-  font-size: 13px;
+  font-size: 0.929em;
 }
 
 .appraiser-details dt {
@@ -732,22 +737,25 @@ button {
   .grid-4, .grid-3, .grid-2 { grid-template-columns: 1fr; }
   .field-wide { grid-column: span 1; }
   .app-header-brand p { display: none; }
-  .report-page { width: 100%; padding: 8mm; }
 }
 
-/* Phone screens: let the wide item table scroll sideways instead of squashing */
-@media screen and (max-width: 720px) {
-  .report-table-wrap { overflow-x: auto; }
-  .report-table { min-width: 620px; }
-  .report-footer-block { flex-direction: column; }
-  .report-footer-right { width: 100%; }
+/* Small screens: shrink the whole sheet to the screen width (layout stays identical) */
+@media screen and (max-width: 900px) {
+  .report-page {
+    font-size: calc((100vw - 16px) / 57);
+    margin: 12px auto 40px;
+  }
 }
 
 /* ==========================================================
    PRINT MEDIA  (kept last so it wins over the screen rules)
-   The report is allowed to be exactly as tall as its content —
-   no forced full-page height — so it stays on ONE page even
-   when the browser adds its own margins.
+
+   No viewport units here on purpose: iPhone Safari and Android Chrome
+   disagree on what 100vh means while printing, and iPhone Safari also
+   reserves ~15 mm top and bottom for its URL/date/page-number bands
+   whatever @page says. Instead script.js measures the sheet and sets
+   --print-fs: 14px normally (= exactly A4 width), smaller only for
+   reports that are too tall for one page.
    ========================================================== */
 
 @media print {
@@ -778,21 +786,12 @@ button {
   }
 
   .report-page {
+    font-size: var(--print-fs, 13px);
+    margin: 0 auto;
+    max-width: 100%;
     box-shadow: none;
-    margin: 0;
-    width: 100%;
-    max-width: 210mm;
     min-height: 0;
     height: auto;
-    padding: 10mm 14mm;
-  }
-
-  .report-table-wrap {
-    overflow: visible;
-  }
-
-  .report-table {
-    min-width: 0;
   }
 
   .report-table,
