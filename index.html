@@ -107,6 +107,7 @@
         <h2 class="card-title">Jewellery items</h2>
         <button type="button" class="btn btn-primary btn-small" id="addRowBtn">+ Add item</button>
       </div>
+      <p class="card-hint">Enter Gross Wt and either Stone Wt or Net Wt &mdash; the other one is filled in automatically.</p>
 
       <div class="table-scroll">
         <table class="item-table" id="itemTable">
@@ -116,8 +117,8 @@
               <th class="col-item">Item</th>
               <th class="col-pcs">Pcs</th>
               <th class="col-wt">Gross Wt (g)</th>
-              <th class="col-wt" title="Calculated automatically: Gross Wt − Net Wt">Stone Wt (g)</th>
-              <th class="col-wt">Net Wt (g)</th>
+              <th class="col-wt" title="Enter this or Net Wt — the other fills automatically">Stone Wt (g)</th>
+              <th class="col-wt" title="Enter this or Stone Wt — the other fills automatically">Net Wt (g)</th>
               <th class="col-kt">Karat</th>
               <th class="col-value">Value (₹)</th>
               <th class="col-del"></th>
@@ -286,21 +287,9 @@
       and the exact weight, purity of the metal and market value of each item as on date are indicated below.
     </p>
 
-    <p class="report-rate-line">Market rate per gram (24K fine gold): <span class="fill-in" id="rRatePerGram">________</span></p>
+    <p class="report-rate-line">Market rate of 1 g of fine gold: <span class="fill-in" id="rRatePerGram">________</span></p>
 
-    <div class="report-table-wrap">
-      <table class="report-table">
-        <colgroup>
-          <col style="width:6%">
-          <col style="width:18%">
-          <col style="width:6%">
-          <col style="width:11.5%">
-          <col style="width:10.5%">
-          <col style="width:11.5%">
-          <col style="width:13.5%">
-          <col style="width:11%">
-          <col style="width:12%">
-        </colgroup>
+    <table class="report-table">
         <thead>
           <tr>
             <th>Sl. No.</th>
@@ -329,8 +318,7 @@
             <td class="rt-right" id="rTotalValue">₹0</td>
           </tr>
         </tfoot>
-      </table>
-    </div>
+    </table>
 
     <p class="report-declaration">
       I solemnly declare that weight purity of the Gold Ornaments/ Precious stones indicated above
@@ -378,7 +366,7 @@
     <td class="col-item"><input type="text" class="cell-input item-name" placeholder="e.g. Necklace"></td>
     <td class="col-pcs"><input type="number" class="cell-input item-pcs" min="0" step="1" value="1"></td>
     <td class="col-wt"><input type="number" class="cell-input item-gross" min="0" step="0.001" placeholder="0.000"></td>
-    <td class="col-wt stone-cell" title="Gross Wt − Net Wt">0.000</td>
+    <td class="col-wt"><input type="number" class="cell-input item-stone" min="0" step="0.001" placeholder="0.000"></td>
     <td class="col-wt"><input type="number" class="cell-input item-net" min="0" step="0.001" placeholder="0.000"></td>
     <td class="col-kt">
       <select class="cell-input item-karat">
